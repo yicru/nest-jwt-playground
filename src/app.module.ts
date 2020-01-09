@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { AdminsService } from './admins/admins.service';
+import { AdminsModule } from './admins/admins.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -13,8 +15,9 @@ import configuration from './config/configuration';
     DatabaseModule,
     AuthModule,
     UsersModule,
+    AdminsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AdminsService],
 })
 export class AppModule {}
