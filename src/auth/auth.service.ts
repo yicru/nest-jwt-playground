@@ -28,10 +28,10 @@ export class AuthService {
   }
 
   async validateUser(
-    username: string,
+    email: string,
     pass: string,
   ): Promise<Omit<User, 'password'> | null> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findByEmail(email);
 
     if (user && bcrypt.compareSync(pass, user.password)) {
       const { password, ...result } = user;
@@ -40,8 +40,15 @@ export class AuthService {
     return null;
   }
 
-  async login(user: Admin | User) {
+  async loginAdmin(user: Admin) {
     const payload = { username: user.username, sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async loginUser(user: User) {
+    const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
