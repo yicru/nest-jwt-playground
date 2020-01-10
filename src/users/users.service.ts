@@ -16,10 +16,6 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ username });
-  }
-
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ email });
   }
