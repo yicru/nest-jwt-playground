@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -15,13 +17,6 @@ import { CreateUserDTO } from './create-user.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @UseGuards(AuthGuard('user'))
-  @Get('/profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
   @UseGuards(AuthGuard('admin'))
   @Get('/')
   async getUsers() {
@@ -50,5 +45,27 @@ export class UsersController {
       );
     }
     return await this.usersService.createUser(createUserDTO);
+  }
+
+  @UseGuards()
+  @Delete('/:id')
+  async deleteUser(@Param('id') id: number) {
+    const user = await this.usersService.findById(id);
+    if (!user) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Not Found',
+        },
+        404,
+      );
+    }
+    return this.usersService.deleteUser(id);
+  }
+
+  @UseGuards(AuthGuard('user'))
+  @Get('/profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

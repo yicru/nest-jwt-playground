@@ -34,6 +34,11 @@ export class UsersService {
     return user;
   }
 
+  async deleteUser(id: number): Promise<void> {
+    await this.userRepository.delete(id);
+    return;
+  }
+
   private static hashPassword(password: string): string {
     return bcrypt.hashSync(
       password,
