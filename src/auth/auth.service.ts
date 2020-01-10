@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AdminsService } from '../admins/admins.service';
 import { Admin } from '../admins/admin.entity';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/users.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly adminsService: AdminsService,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -24,8 +27,28 @@ export class AuthService {
     return null;
   }
 
-  async login(admin: Admin) {
-    const payload = { username: admin.username, sub: admin.id };
+  async validateUser(
+    username: string,
+    pass: string,
+  ): Promise<Omit<User, 'password'> | null> {
+    const user = await this.usersService.findOne(username);
+
+    if (user && bcrypt.compareSync(pass, user.password)) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
+  }
+
+  async loginAdmin(admin: Admin) {
+    const payload = { username: admin.username, sub: admin.id, isAdmin: true };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async loginUser(user: User) {
+    const payload = { username: user.username, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
