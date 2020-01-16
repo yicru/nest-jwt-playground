@@ -1,5 +1,13 @@
 version: '3.3'
 services:
+  app:
+    build: ./.docker/app
+    ports:
+      - '1234:1234'
+    volumes:
+      - ./:/app
+    tty: true
+
   db:
     image: mysql:5.7
     restart: always
